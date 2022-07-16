@@ -10,13 +10,12 @@ pragma solidity ^0.8.0;
 
 interface ICollectionCore {
     function initialize(string calldata name, string calldata symbol, string calldata contractURI, string calldata tokenURI, uint supply, uint price, uint8 primaryRoyaltyPercentage,
-        uint8 maxPurchaseNumber, uint reserveNumber) external;
+        uint8 maxPurchaseNumber, uint reserveNumber, address payoutAddress) external;
     function publisherWithdraw() external;
     function adminWithdraw() external;                                                                       
     function mint(uint8 number, address recipient) external payable;
     function totalSupply() external returns (uint8);
     function pauseMint(bool) external;
     function mintStatus() external returns (bool);
-    function mintPrice() external returns (uint256);
     function reserveMint() external;
 }
