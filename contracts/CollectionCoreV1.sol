@@ -1,10 +1,9 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./utils/Initializable.sol";
-import "./utils/Permissions.sol";
 import "./interfaces/ICollectionCoreV1.sol";
-import "./ERC721.sol";
+import "./ERC721Upgradeable.sol";
+import "./utils/Permissions.sol";
 
 /**
  * @title CollectionCoreV1
@@ -15,43 +14,68 @@ import "./ERC721.sol";
 
 //eips? 1967 2981 165
 //ownable, admin
-contract CollectionCore is ICollectionCore, ERC721, Permissions, Initializable {
+contract CollectionCore is ICollectionCore, ERC721Upgradeable, Permissions {
 
+    bool public _mintState;
     uint public _totalSupply;
     uint public _maxSupply;
     uint public _price;
     uint public _primaryRoyaltyPercentage; // input divided by 1000 to calculate percentage (155 -> 15.5%)
     uint public _maxPurchaseNumber;
     uint public _reserveNumber;
-    address constant alexandriaAdmin = address();
+    uint public _ownerFunds;
+    uint public _adminFunds;
+    //address constant alexandriaAdmin = address(0);
     string _contractURI;
 
-    function initialize(string calldata name, string calldata symbol, string calldata contractURI_, string calldata baseURI, uint maxSupply, 
-        uint price, uint8 primaryRoyaltyPercentage, uint8 maxPurchaseNumber, uint reserveNumber, address payoutAddress) external initializer {
-            //initialize ERC20
-            _contractURI = contractURI_;
-            _price = price;
-            _maxSupply = maxSupply;
-            _setBaseURI(baseURI);
-            _primaryRoyaltyPercentage = primaryRoyaltyPercentage;
-            _maxPurchaseNumber = maxPurchaseNumber;
-            _reserveNumber = reserveNumber;
-            setOwnerInternal(payoutAddress);
-            setAdminInternal(alexandriaAdmin);
+    function initialize(string calldata name, string calldata symbol, InitializationData calldata parameters) external override initializer {
+        __ERC721_init(name, symbol);
+        _totalSupply = 0;
+        _ownerFunds = 0;
+        _adminFunds = 0;
+        _maxSupply = parameters.maxSupply;
+        _price = parameters.price;
+        _primaryRoyaltyPercentage = parameters.primaryRoyaltyPercentage;
+        _maxPurchaseNumber = parameters.maxPurchaseNumber;
+        _reserveNumber = parameters.reserveNumber;
+        _contractURI = parameters.contractURI;
+        _setBaseURI(parameters.baseURI);
+        setOwnerInternal(parameters.payoutAddress);
+        setAdminInternal(parameters.alexandriaAddress);
     }
     
-    
-    
-    
-    
-    
-    
-    function publisherWithdraw() external onlyOwner {}
-    function adminWithdraw() external onlyAdmin {}                                                                       
-    function mint(uint8 number, address recipient) external payable {}
-    function totalSupply() external returns (uint8) {}
-    function pauseMint(bool) external onlyOwner {}
-    function mintStatus() external returns (bool) {}
-    function contractURI() public view returns (string memory) {}
-    function reserveMint() external {}
+    function mint(uint8 number, address recipient) external override payable {
+        require(_mintState, "minting is not enabled");
+        require(number <= _maxPurchaseNumber, "number of mints exceeds max purchase number");
+        require(_totalSupply + number <= _maxSupply, "total supply exceeds max supply");
+
+    }
+
+    function ownerWithdraw() external override onlyOwner {
+        uint amount = _ownerFunds;
+        _ownerFunds = 0;
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed.");
+    }
+
+    function adminWithdraw() external override onlyAdmin {     
+        uint amount = _adminFunds;
+        _adminFunds = 0;                                                                  
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed.");
+    }
+
+    function totalSupply() public view returns (uint) {
+        return _totalSupply;
+    }
+
+    function changeMintState(bool mintState) external override onlyOwner {
+        _mintState = mintState;
+    }
+
+    function contractURI() public view returns (string memory) {
+        return _contractURI;
+    }
+
+    function reserveMint() external override {}
 }

@@ -8,14 +8,23 @@ pragma solidity ^0.8.0;
  * @dev Interface for collection logic
  */
 
+struct InitializationData {
+        uint maxSupply;
+        uint price;
+        uint primaryRoyaltyPercentage;
+        uint maxPurchaseNumber;
+        uint reserveNumber;
+        string contractURI;
+        string baseURI;
+        address payoutAddress;
+        address alexandriaAddress;
+}
+
 interface ICollectionCore {
-    function initialize(string calldata name, string calldata symbol, string calldata contractURI, string calldata tokenURI, uint supply, uint price, uint8 primaryRoyaltyPercentage,
-        uint8 maxPurchaseNumber, uint reserveNumber, address payoutAddress) external;
-    function publisherWithdraw() external;
+    function initialize(string calldata name, string calldata symbol, InitializationData calldata parameters) external;
+    function ownerWithdraw() external;
     function adminWithdraw() external;                                                                       
     function mint(uint8 number, address recipient) external payable;
-    function totalSupply() external returns (uint8);
-    function pauseMint(bool) external;
-    function mintStatus() external returns (bool);
+    function changeMintState(bool) external;
     function reserveMint() external;
 }
