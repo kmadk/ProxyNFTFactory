@@ -2,8 +2,9 @@
 pragma solidity ^0.8.0;
 
 import "./interfaces/ICollectionCoreV1.sol";
-import "./ERC721Upgradeable.sol";
 import "./utils/Permissions.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 
 /**
  * @title CollectionCoreV1
@@ -15,7 +16,9 @@ import "./utils/Permissions.sol";
 //eips? 1967 2981 165
 //ownable, admin
 contract CollectionCore is ICollectionCore, ERC721Upgradeable, Permissions {
+    using StringsUpgradeable for uint256;
 
+    bool _reserveMintState;
     bool public _mintState;
     uint public _totalSupply;
     uint public _maxSupply;
@@ -26,6 +29,7 @@ contract CollectionCore is ICollectionCore, ERC721Upgradeable, Permissions {
     uint public _ownerFunds;
     uint public _adminFunds;
     //address constant alexandriaAdmin = address(0);
+    string baseURI;
     string _contractURI;
 
     function initialize(string calldata name, string calldata symbol, InitializationData calldata parameters) external override initializer {
@@ -39,7 +43,7 @@ contract CollectionCore is ICollectionCore, ERC721Upgradeable, Permissions {
         _maxPurchaseNumber = parameters.maxPurchaseNumber;
         _reserveNumber = parameters.reserveNumber;
         _contractURI = parameters.contractURI;
-        _setBaseURI(parameters.baseURI);
+        baseURI = parameters.baseURI;
         setOwnerInternal(parameters.payoutAddress);
         setAdminInternal(parameters.alexandriaAddress);
     }
@@ -48,8 +52,15 @@ contract CollectionCore is ICollectionCore, ERC721Upgradeable, Permissions {
         require(_mintState, "minting is not enabled");
         require(number <= _maxPurchaseNumber, "number of mints exceeds max purchase number");
         require(_totalSupply + number <= _maxSupply, "total supply exceeds max supply");
-
+        require(number * _price == msg.value, "invalid payment amount");
+        for(uint i = 0; i < number; i++) {
+            if (_totalSupply < _maxSupply) {
+                _totalSupply++;
+                _safeMint(recipient, _totalSupply);
+            }
+        }
     }
+    
 
     function ownerWithdraw() external override onlyOwner {
         uint amount = _ownerFunds;
@@ -77,5 +88,23 @@ contract CollectionCore is ICollectionCore, ERC721Upgradeable, Permissions {
         return _contractURI;
     }
 
-    function reserveMint() external override {}
+    /**
+     * @dev See {IERC721Metadata-tokenURI}.
+     */
+    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+        _requireMinted(tokenId);
+
+        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString())) : "";
+    }
+
+    function reserveMint(address recipient) external override {
+        require(!_reserveMintState, "already reserve minted");
+        _reserveMintState = true;
+        for (uint i; i < _reserveNumber; i++) {
+            if (_totalSupply < _maxSupply) {
+                _totalSupply++;
+                _safeMint(recipient, _totalSupply);
+            }
+        }
+    }
 }

@@ -26,5 +26,5 @@ interface ICollectionCore {
     function adminWithdraw() external;                                                                       
     function mint(uint8 number, address recipient) external payable;
     function changeMintState(bool) external;
-    function reserveMint() external;
+    function reserveMint(address) external;
 }
