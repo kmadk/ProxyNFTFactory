@@ -28,7 +28,6 @@ contract CollectionCore is ICollectionCore, ERC721Upgradeable, Permissions {
     uint public _reserveNumber;
     uint public _ownerFunds;
     uint public _adminFunds;
-    //address constant alexandriaAdmin = address(0);
     string baseURI;
     string _contractURI;
 
