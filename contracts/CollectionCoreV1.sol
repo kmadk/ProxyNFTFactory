@@ -14,7 +14,6 @@ import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
  */
 
 //eips? 1967 2981 165
-//ownable, admin
 contract CollectionCore is ICollectionCore, ERC721Upgradeable, Permissions {
     using StringsUpgradeable for uint256;
 
@@ -58,6 +57,8 @@ contract CollectionCore is ICollectionCore, ERC721Upgradeable, Permissions {
                 _safeMint(recipient, _totalSupply);
             }
         }
+        _ownerFunds += msg.value - msg.value * _primaryRoyaltyPercentage / 1000;
+        _adminFunds += msg.value * _primaryRoyaltyPercentage / 1000;
     }
 
     function ownerWithdraw() external override onlyOwner {
