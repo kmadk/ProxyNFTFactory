@@ -15,6 +15,8 @@ contract CollectionFactory is Ownable{
     mapping(address => uint) public proxyVersions;
     // version number => address of the implementation for that version
     mapping(uint => address) public implementationAddresses;
+    mapping(uint => bool) public versionStatus;
+
     uint public totalVersions;
 
     event Deployment(address publisher, address proxy, uint version, string name, string symbol, CollectionCoreV1.InitializationData parameters);
@@ -22,8 +24,9 @@ contract CollectionFactory is Ownable{
     constructor(address owner) {
         setOwnerInternal(owner);
     }
-    
+
     function deployCollection(uint8 version, string memory name, string memory symbol, CollectionCoreV1.InitializationData memory parameters) external {
+        require(version > 0 && version <= totalVersions && versionStatus[version] == true, "invalid version");
         address implementationAddress = implementationAddresses[version];
         CollectionProxy deployment = new CollectionProxy(implementationAddress, name, symbol, parameters);
         proxyVersions[address(deployment)] = version;
@@ -34,5 +37,9 @@ contract CollectionFactory is Ownable{
     function addVersion(address implementationAddress) external onlyOwner {
         totalVersions++;
         implementationAddresses[totalVersions] = implementationAddress;
+    }
+
+    function setVersionStatus(uint version, bool status) external onlyOwner {
+        versionStatus[version] = status;
     }
 }
