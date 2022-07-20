@@ -28,8 +28,8 @@ contract CollectionCore is ICollectionCore, ERC721Upgradeable, Permissions {
     uint public _reserveNumber;
     uint public _ownerFunds;
     uint public _adminFunds;
-    string baseURI;
-    string _contractURI;
+    string baseUri;
+    string contractUri;
 
     function initialize(string calldata name, string calldata symbol, InitializationData calldata parameters) external override initializer {
         __ERC721_init(name, symbol);
@@ -41,8 +41,8 @@ contract CollectionCore is ICollectionCore, ERC721Upgradeable, Permissions {
         _primaryRoyaltyPercentage = parameters.primaryRoyaltyPercentage;
         _maxPurchaseNumber = parameters.maxPurchaseNumber;
         _reserveNumber = parameters.reserveNumber;
-        _contractURI = parameters.contractURI;
-        baseURI = parameters.baseURI;
+        contractUri = parameters.contractURI;
+        baseUri = parameters.baseURI;
         setOwnerInternal(parameters.payoutAddress);
         setAdminInternal(parameters.alexandriaAddress);
     }
@@ -59,7 +59,6 @@ contract CollectionCore is ICollectionCore, ERC721Upgradeable, Permissions {
             }
         }
     }
-    
 
     function ownerWithdraw() external override onlyOwner {
         uint amount = _ownerFunds;
@@ -84,16 +83,13 @@ contract CollectionCore is ICollectionCore, ERC721Upgradeable, Permissions {
     }
 
     function contractURI() public view returns (string memory) {
-        return _contractURI;
+        return contractUri;
     }
 
-    /**
-     * @dev See {IERC721Metadata-tokenURI}.
-     */
-    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
         _requireMinted(tokenId);
 
-        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString())) : "";
+        return bytes(baseUri).length > 0 ? string(abi.encodePacked(baseUri, tokenId.toString())) : "";
     }
 
     function reserveMint(address recipient) external override {
