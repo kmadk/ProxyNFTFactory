@@ -8,7 +8,7 @@ pragma solidity ^0.8.0;
  * @dev Interface for collection logic
  */
 
-struct InitializationData {
+/* struct InitializationData {
         uint maxSupply;
         uint price;
         uint primaryRoyaltyPercentage;
@@ -18,10 +18,10 @@ struct InitializationData {
         string baseURI;
         address payoutAddress;
         address alexandriaAddress;
-}
+} */
 
-interface ICollectionCore {
-    function initialize(string calldata name, string calldata symbol, InitializationData calldata parameters) external;
+interface ICollectionCoreV1 {
+    //function initialize(string calldata name, string calldata symbol, InitializationData calldata parameters) external;
     function ownerWithdraw() external;
     function adminWithdraw() external;                                                                       
     function mint(uint8 number, address recipient) external payable;

@@ -13,10 +13,20 @@ import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
  * @dev Customizeable collection logic
  */
 
-//eips? 1967 2981 165
-contract CollectionCore is ICollectionCore, ERC721Upgradeable, Permissions {
+contract CollectionCoreV1 is ICollectionCoreV1, ERC721Upgradeable, Permissions {
     using StringsUpgradeable for uint256;
 
+struct InitializationData {
+        uint maxSupply;
+        uint price;
+        uint primaryRoyaltyPercentage;
+        uint maxPurchaseNumber;
+        uint reserveNumber;
+        string contractURI;
+        string baseURI;
+        address payoutAddress;
+        address alexandriaAddress;
+}
     bool _reserveMintState;
     bool public _mintState;
     uint public _totalSupply;
@@ -30,7 +40,7 @@ contract CollectionCore is ICollectionCore, ERC721Upgradeable, Permissions {
     string baseUri;
     string contractUri;
 
-    function initialize(string calldata name, string calldata symbol, InitializationData calldata parameters) external override initializer {
+    function initialize(string calldata name, string calldata symbol, InitializationData calldata parameters) external initializer {
         __ERC721_init(name, symbol);
         _totalSupply = 0;
         _ownerFunds = 0;
