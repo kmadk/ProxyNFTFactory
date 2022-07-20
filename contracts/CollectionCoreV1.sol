@@ -16,7 +16,7 @@ import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 contract CollectionCoreV1 is ICollectionCoreV1, ERC721Upgradeable, Permissions {
     using StringsUpgradeable for uint256;
 
-struct InitializationData {
+    struct InitializationData {
         uint maxSupply;
         uint price;
         uint primaryRoyaltyPercentage;
@@ -26,7 +26,8 @@ struct InitializationData {
         string baseURI;
         address payoutAddress;
         address alexandriaAddress;
-}
+    }
+    
     bool _reserveMintState;
     bool public _mintState;
     uint public _totalSupply;

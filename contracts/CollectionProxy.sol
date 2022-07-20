@@ -9,15 +9,13 @@ import "@openzeppelin/contracts/proxy/Proxy.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/StorageSlot.sol";
 
-contract CollectionProxyV1 is Proxy {
+contract CollectionProxy is Proxy {
 
-    constructor(string memory name, string memory symbol, CollectionCoreV1.InitializationData memory parameters) {
+    constructor(address implementationAddress, string memory name, string memory symbol, CollectionCoreV1.InitializationData memory parameters) {
         assert(_IMPLEMENTATION_SLOT == bytes32(uint256(keccak256("eip1967.proxy.implementation")) - 1));
-        // put deployed value here FIX
-        StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = 0xe4E4003afE3765Aca8149a82fc064C0b125B9e5a;
-        // put deployed value here FIX
+        StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = implementationAddress;
         Address.functionDelegateCall(
-            0xe4E4003afE3765Aca8149a82fc064C0b125B9e5a,
+            implementationAddress,
             abi.encodeWithSignature("initialize(string,string,(uint,uint,uint,uint,uint,string,string,address,address))",
                 name, symbol, parameters)
         );
