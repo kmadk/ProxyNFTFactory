@@ -9,7 +9,7 @@ import "./CollectionProxy.sol";
 import "./utils/Ownable.sol";
 
 
-contract CollectionFactory is Ownable{
+contract CollectionFactory is Ownable {
 
     // address of a proxy => the version of the implementation it uses
     mapping(address => uint) public proxyVersions;

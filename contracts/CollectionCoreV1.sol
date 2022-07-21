@@ -27,7 +27,7 @@ contract CollectionCoreV1 is ICollectionCoreV1, ERC721Upgradeable, Permissions {
         address payoutAddress;
         address alexandriaAddress;
     }
-    
+
     bool _reserveMintState;
     bool public _mintState;
     uint public _totalSupply;
@@ -59,7 +59,7 @@ contract CollectionCoreV1 is ICollectionCoreV1, ERC721Upgradeable, Permissions {
     
     function mint(uint8 number, address recipient) external override payable {
         require(_mintState, "minting is not enabled");
-        require(number <= _maxPurchaseNumber, "number of mints exceeds max purchase number");
+        require(number <= _maxPurchaseNumber || _maxPurchaseNumber == 0, "number of mints exceeds max purchase number");
         require(_totalSupply + number <= _maxSupply, "total supply exceeds max supply");
         require(number * _price == msg.value, "invalid payment amount");
         for(uint i = 0; i < number; i++) {
