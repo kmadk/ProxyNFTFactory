@@ -32,10 +32,10 @@ describe("CollectionCoreV1", () => {
       "Initializable: contract is already initialized")
 	})
 
-  it("[sanity]: cannot initialize twice", async () => {
+  it("can mint", async () => {
     await collectionCore.initialize("Alexandria", "ALEX", {maxSupply: BigNumber.from('1000'), price: pow18, primaryRoyaltyPercentage: BigNumber.from("150"), 
       maxPurchaseNumber: BigNumber.from('5'), reserveNumber: BigNumber.from('0'), contractURI: "", baseURI: "", payoutAddress: alice.address, alexandriaAddress: alice.address})
-    await collectionCore.mint(BigNumber.from('1'), alice.address)
+    await collectionCore.connect(alice).mint(BigNumber.from('1'), alice.address, {value: pow18})
     })
    
 

@@ -43,6 +43,7 @@ contract CollectionCoreV1 is ICollectionCoreV1, ERC721Upgradeable, Permissions {
 
     function initialize(string calldata name, string calldata symbol, InitializationData calldata parameters) external initializer {
         __ERC721_init(name, symbol);
+        _mintState = true;
         _totalSupply = 0;
         _ownerFunds = 0;
         _adminFunds = 0;
