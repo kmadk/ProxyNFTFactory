@@ -104,7 +104,7 @@ contract CollectionCoreV1 is ICollectionCoreV1, ERC721Upgradeable, Permissions {
         return bytes(baseUri).length > 0 ? string(abi.encodePacked(baseUri, tokenId.toString())) : "";
     }
 
-    function reserveMint(address recipient) external override {
+    function reserveMint(address recipient) external override onlyOwner {
         require(!_reserveMintState, "already reserve minted");
         _reserveMintState = true;
         for (uint i; i < _reserveNumber; i++) {
