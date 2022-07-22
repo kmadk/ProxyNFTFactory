@@ -34,9 +34,11 @@ describe("CollectionCoreV1", () => {
 
   it("can mint", async () => {
     await collectionCore.initialize("Alexandria", "ALEX", {maxSupply: BigNumber.from('1000'), price: pow18, primaryRoyaltyPercentage: BigNumber.from("150"), 
-      maxPurchaseNumber: BigNumber.from('5'), reserveNumber: BigNumber.from('0'), contractURI: "", baseURI: "", payoutAddress: alice.address, alexandriaAddress: alice.address})
+      maxPurchaseNumber: BigNumber.from('5'), reserveNumber: BigNumber.from('0'), contractURI: "", baseURI: "https://website/", payoutAddress: alice.address, alexandriaAddress: alice.address})
     await collectionCore.connect(alice).mint(BigNumber.from('1'), alice.address, {value: pow18})
-    })
-   
+    expect(await collectionCore.balanceOf(alice.address)).to.equal(BigNumber.from('1'))
+    expect(await collectionCore.totalSupply()).to.equal(BigNumber.from('1'))
+    expect(await collectionCore.tokenURI(1)).to.equal("https://website/1")
+  })
 
 })
