@@ -10,7 +10,7 @@ import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
  * @title CollectionCoreV1
  * @author Kelton Madden
  *
- * @dev Customizeable collection logic
+ * @dev Customizeable NFT collection logic
  */
 
 contract CollectionCoreV1 is ICollectionCoreV1, ERC721Upgradeable, Permissions {
