@@ -100,7 +100,7 @@ contract CollectionCoreV1 is ICollectionCoreV1, ERC721Upgradeable, Permissions {
     }
 
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
-        _requireMinted(tokenId);
+        require(_exists(tokenId), "ERC721: uri query for nonexistent token");
 
         return bytes(baseUri).length > 0 ? string(abi.encodePacked(baseUri, tokenId.toString())) : "";
     }
